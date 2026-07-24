@@ -1,9 +1,9 @@
 # SymCRust verification scripts
 
 Tooling that sits between the Charon → Aeneas extraction pipeline and the
-hand-authored Lean proofs under `lean/Symcrust/Properties/`. All three
+hand-authored Lean proofs under `Symcrust/Properties/`. All three
 scripts below are invoked from `make extract-postprocess` in
-`SymCRust/Makefile`; see `lean/Symcrust/Code/EXTRACTION.md` for the
+`SymCRust/Makefile`; see `Symcrust/Code/EXTRACTION.md` for the
 canonical reproduction recipe.
 
 ## `prune-external-template.py`
@@ -12,7 +12,7 @@ Post-processor for the auto-generated `FunsExternal_Template.lean`. Two jobs:
 
 1. **Prune silicon stubs.** Removes every `@[rust_fun "core::core_arch::…"]`
    axiom whose Rust path is already bound by a hand-authored axiom or step
-   theorem under `lean/Symcrust/Properties/**`. Aeneas emits these stubs
+   theorem under `Symcrust/Properties/**`. Aeneas emits these stubs
    because it does not know about silicon intrinsics; our binding files
    take over.
 2. **Inject façade imports.** For each architecture whose binding files

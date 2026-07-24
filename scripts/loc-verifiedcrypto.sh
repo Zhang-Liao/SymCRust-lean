@@ -34,11 +34,11 @@
 # a separate row): `Properties/Axioms/`, `Properties/BitsAndBytes/`,
 # `Properties/Iterators.lean`, `Properties/Stdlib.lean`.
 #
-# Usage: bash SymCRust/lean/scripts/loc-verifiedcrypto.sh [REPO_ROOT]
+# Usage: bash SymCRust/scripts/loc-verifiedcrypto.sh [REPO_ROOT]
 
 set -euo pipefail
 script_dir=$(cd "$(dirname "$0")" && pwd)
-repo_root="${1:-$(cd "$script_dir/../../.." && pwd)}"
+repo_root="${1:-$(cd "$script_dir/../.." && pwd)}"
 cd "$repo_root"
 
 # ----- cloc helpers -----
@@ -71,7 +71,7 @@ rust_mlkem()    { ls SymCRust/src/mlkem/{ffi,hash,key,mlkem,ntt}.rs \
                      SymCRust/src/mlkem/ntt_avx2.rs 2>/dev/null; }
 
 spec_for() { # arg = primitive's Spec/ subdir name
-  find SymCRust/lean/Spec/"$1" -name '*.lean' \
+  find SymCRust/Spec/"$1" -name '*.lean' \
     -not -name 'TestVectors.lean' -not -name 'Tests.lean' -not -name '*Properties.lean' 2>/dev/null
 }
 
@@ -92,16 +92,16 @@ spec_normative_code() {
 }
 
 # Properties buckets (Lean files only — stray .rs bug-reports/ should not count).
-prop_sha3()  { lfiles SymCRust/lean/Symcrust/Properties/SHA3 SymCRust/lean/Symcrust/Properties/SHA3.lean; }
+prop_sha3()  { lfiles SymCRust/Symcrust/Properties/SHA3 SymCRust/Symcrust/Properties/SHA3.lean; }
 prop_mlkem() { # all ML-KEM, including Intrinsics (scalar + SSE2/NEON + AVX2)
-  lfiles SymCRust/lean/Symcrust/Properties/MLKEM SymCRust/lean/Symcrust/Properties/MLKEM.lean
+  lfiles SymCRust/Symcrust/Properties/MLKEM SymCRust/Symcrust/Properties/MLKEM.lean
 }
 
 prop_shared() {
-  lfiles SymCRust/lean/Symcrust/Properties/Axioms \
-         SymCRust/lean/Symcrust/Properties/BitsAndBytes \
-         SymCRust/lean/Symcrust/Properties/Iterators.lean \
-         SymCRust/lean/Symcrust/Properties/Stdlib.lean
+  lfiles SymCRust/Symcrust/Properties/Axioms \
+         SymCRust/Symcrust/Properties/BitsAndBytes \
+         SymCRust/Symcrust/Properties/Iterators.lean \
+         SymCRust/Symcrust/Properties/Stdlib.lean
 }
 
 # Hardware-intrinsic model (shared, not attributed to any one primitive):
@@ -109,12 +109,12 @@ prop_shared() {
 #   "spec"       -> the silicon axioms (vendor-doc semantics) in Intrinsics/Axioms/
 #   proofs       -> Intrinsics/Properties/ + the BV/byte/simd support lemmas
 rust_intrinsics() { rfiles SymCRust/src/verify/intrinsics; }
-spec_intrinsics() { lfiles SymCRust/lean/Intrinsics/Axioms; }
+spec_intrinsics() { lfiles SymCRust/Intrinsics/Axioms; }
 prop_intrinsics() {
-  lfiles SymCRust/lean/Intrinsics/Properties \
-         SymCRust/lean/Intrinsics/Simd.lean \
-         SymCRust/lean/Intrinsics/Bytes.lean \
-         SymCRust/lean/Intrinsics/BVRealize.lean
+  lfiles SymCRust/Intrinsics/Properties \
+         SymCRust/Intrinsics/Simd.lean \
+         SymCRust/Intrinsics/Bytes.lean \
+         SymCRust/Intrinsics/BVRealize.lean
 }
 
 # ----- table A: per-primitive headline (Rust / Spec / Proof code) -----
@@ -134,8 +134,8 @@ row_norm() { # row with normative-stripped spec(s)
     "$(cloc_code $rust)" "$(spec_normative_code $specs)" "$(cloc_code $prop)"
 }
 
-row_norm "SHA-3 / SHAKE"      "$(rust_sha3)"  "SymCRust/lean/Spec/SHA3/Spec.lean"   "$(prop_sha3)"
-row_norm "ML-KEM"             "$(rust_mlkem)" "SymCRust/lean/Spec/MLKEM/Spec.lean"  "$(prop_mlkem)"
+row_norm "SHA-3 / SHAKE"      "$(rust_sha3)"  "SymCRust/Spec/SHA3/Spec.lean"   "$(prop_sha3)"
+row_norm "ML-KEM"             "$(rust_mlkem)" "SymCRust/Spec/MLKEM/Spec.lean"  "$(prop_mlkem)"
 row      "Intrinsics"         "$(rust_intrinsics)" "$(spec_intrinsics)" "$(prop_intrinsics)"
 
 echo
@@ -183,11 +183,11 @@ for_subtree() {
 }
 # A few illustrative dumps; users can add their own targets at the end of the script.
 for_subtree "SHA3" \
-  SymCRust/lean/Symcrust/Properties/SHA3/Basic.lean \
-  SymCRust/lean/Symcrust/Properties/SHA3/Permutation.lean \
-  SymCRust/lean/Symcrust/Properties/SHA3/Variants.lean \
-  SymCRust/lean/Symcrust/Properties/SHA3/OneShot.lean \
-  SymCRust/lean/Symcrust/Properties/SHA3/Streaming.lean 2>/dev/null
+  SymCRust/Symcrust/Properties/SHA3/Basic.lean \
+  SymCRust/Symcrust/Properties/SHA3/Permutation.lean \
+  SymCRust/Symcrust/Properties/SHA3/Variants.lean \
+  SymCRust/Symcrust/Properties/SHA3/OneShot.lean \
+  SymCRust/Symcrust/Properties/SHA3/Streaming.lean 2>/dev/null
 
 for_subtree "MLKEM Intrinsics" \
-  SymCRust/lean/Symcrust/Properties/MLKEM/Intrinsics
+  SymCRust/Symcrust/Properties/MLKEM/Intrinsics

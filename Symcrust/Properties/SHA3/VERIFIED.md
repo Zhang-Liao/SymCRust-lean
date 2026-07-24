@@ -11,7 +11,7 @@ for context, methodology, tooling, and trust assumptions.
 
 ## 1. Scope
 
-- **Specification**: `SymCRust/lean/Spec/SHA3/Spec.lean`, a direct
+- **Specification**: `SymCRust/Spec/SHA3/Spec.lean`, a direct
   Lean formalization of [NIST.FIPS.202](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf)
  "SHA-3 Standard: Permutation-Based Hash and Extendable-Output Functions", August 2015.
   Spec definitions and lemmas are annotated with the matching FIPS section /
@@ -47,7 +47,7 @@ for context, methodology, tooling, and trust assumptions.
 
 Using the Rust → Charon → Aeneas → Lean pipeline, all SymCrypt-Rust code subject to
 verification (for all algorithms including ML-KEM) is mechanically translated to Lean
-definitions under `SymCRust/lean/Symcrust/Code/`. The translation of every Rust function is then equipped with an
+definitions under `SymCRust/Symcrust/Code/`. The translation of every Rust function is then equipped with an
 `@[step]`-tagged theorem with precise pre- and post-conditions expressed using the Spec.
 
 The file layout under `Properties/SHA3/` (LOC = `cloc` non-comment, non-blank source lines):
@@ -340,7 +340,7 @@ result.val = (Spec.SHA3.sha3_R B (data.val) ).toList
 follows by combining the above post with `code_toSpec`
 specialised to `(rate = B, suffix = SHA3 hash suffix, m = R)`,
 exactly as `Spec.SHA3.sha3_{224,256,384,512}` are defined at
-[`Spec/SHA3/Spec.lean#L337-L340`](../../../../lean/Spec/SHA3/Spec.lean#L337).
+[`Spec/SHA3/Spec.lean#L337-L340`](../../../Spec/SHA3/Spec.lean#L337).
 The specialisation is monomorphic per concrete `(R, B)` pair.
 
 ### 4.4. `ShakeState` and `OneShotShake.xof`

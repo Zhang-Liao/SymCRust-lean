@@ -7,7 +7,7 @@ Removing this directory from the source tree leaves `cargo build` (no
 features) and the production cmake build *bit-identical* to their current
 outputs. The verification track relies on this "deletable" invariant — see
 [`../../../README-VERIFIEDCRYPTO.md`](../../../README-VERIFIEDCRYPTO.md) and
-the methodology in `../../lean/Intrinsics/INTRINSICS.md`.
+the methodology in `../../Intrinsics/INTRINSICS.md`.
 
 ## Why a separate directory?
 
@@ -34,7 +34,7 @@ non-verify build" invariant easy to audit.
 | Path | Purpose |
 |---|---|
 | `mod.rs` | Module root (`#[cfg(feature = "verify")]` at the `mod` declaration in `lib.rs`). |
-| `intrinsics/` | Per-`(architecture, ISA-extension)` Rust transcriptions of hardware intrinsics, organised as `intrinsics::<arch>::<ext>`. See `../../lean/Intrinsics/INTRINSICS.md`. |
+| `intrinsics/` | Per-`(architecture, ISA-extension)` Rust transcriptions of hardware intrinsics, organised as `intrinsics::<arch>::<ext>`. See `../../Intrinsics/INTRINSICS.md`. |
 
 ## Invariants
 
@@ -53,7 +53,7 @@ non-verify build" invariant easy to audit.
 
 * [`../../../README-VERIFIEDCRYPTO.md`](../../../README-VERIFIEDCRYPTO.md) — top-level explanation of the
   verification track and its divergences from `feature/verifiedcrypto`.
-* `../../lean/Intrinsics/INTRINSICS.md` — methodology and the per-intrinsic
+* `../../Intrinsics/INTRINSICS.md` — methodology and the per-intrinsic
   transcription / axiomatisation convention.
-* `lean/Symcrust/` — the Aeneas-extracted Lean code and proofs that
+* `Symcrust/` — the Aeneas-extracted Lean code and proofs that
   consume this scaffolding.

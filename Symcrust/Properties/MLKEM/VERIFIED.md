@@ -11,7 +11,7 @@ for context, methodology, tooling, and trust assumptions.
 
 ## 1. Scope
 
-- **Specification**: `SymCRust/lean/Spec/MLKEM/Spec.lean`, a direct
+- **Specification**: `SymCRust/Spec/MLKEM/Spec.lean`, a direct
   formalization of
   [NIST FIPS 203](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.203.pdf)
   ("Module-Lattice-Based Key Encapsulation Mechanism Standard",
@@ -46,7 +46,7 @@ for context, methodology, tooling, and trust assumptions.
 
 Using the Rust → Charon → Aeneas → Lean pipeline, all SymCrypt-Rust code subject to
 verification (for all algorithms including ML-KEM) is mechanically translated to Lean
-definitions under `SymCRust/lean/Symcrust/Code/`. The translation of every Rust function is then equipped with an
+definitions under `SymCRust/Symcrust/Code/`. The translation of every Rust function is then equipped with an
 `@[step]`-tagged theorem with precise pre- and post-conditions expressed using the Spec.
 
 The file layout under `Properties/MLKEM/` (LOC = `cloc` non-comment, non-blank source lines):

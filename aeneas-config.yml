@@ -1,17 +1,16 @@
 # Aeneas extraction configuration for the verilib atomization pipeline.
 #
 # The hosted pipeline runs `probe-aeneas extract .` from the repo root, reads
-# this file, treats the repo root as the Lean/Lake project (made valid by the
-# root `lakefile.lean`, which sets `srcDir := "lean"`), and locates the Rust
-# crate via `crate.dir`.
+# this file, treats the repo root as the Lean/Lake project (the Lean sources
+# live directly at the repo root), and locates the Rust crate via `crate.dir`.
 #
 # The charon / aeneas settings mirror `Makefile`'s `extract` target so the
-# atomization scope matches the committed `lean/Symcrust/Code/` sources
+# atomization scope matches the committed `Symcrust/Code/` sources
 # (intrinsics + SHA-3 + ML-KEM).
 
 aeneas:
-  # Pinned to match lean/lean-toolchain (leanprover/lean4:v4.31.0); also the
-  # commit lean/lakefile.lean requires the aeneas Lean backend from.
+  # Pinned to match lean-toolchain (leanprover/lean4:v4.31.0); also the
+  # commit lakefile.lean requires the aeneas Lean backend from.
   commit: "b059c34a"
   repo: "https://github.com/AeneasVerif/aeneas.git"
 
@@ -36,5 +35,5 @@ aeneas_args:
   options:
     - loops-to-rec
     - split-files
-  dest: "lean"            # Lean/Lake project (generated sources under lean/Symcrust/Code)
+  dest: "."               # Lean/Lake project root (generated sources under Symcrust/Code)
   subdir: "Symcrust/Code"

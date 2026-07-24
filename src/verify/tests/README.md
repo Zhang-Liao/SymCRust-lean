@@ -3,7 +3,7 @@
 Each `src/verify/tests/<arch>_<ext>_hw.rs` harness cross-checks a Rust model in
 `src/verify/intrinsics/<arch>/<ext>.rs` against the **real** silicon intrinsic
 (`model(x) == core::arch::<arch>::<intrinsic>(x)`). This is the §1 P7
-"differential = empirical evidence" witness behind every `lean/Intrinsics`
+"differential = empirical evidence" witness behind every `Intrinsics`
 axiom/theorem.
 
 > **This file is the authoritative how-to-run for the differential harnesses.**
@@ -47,5 +47,5 @@ RUSTFLAGS="-C target-feature=+neon,+aes" \
     --test aarch64_neon_hw --test aarch64_aes_hw
 ```
 
-See [`INTRINSICS.md`](../../../lean/Intrinsics/INTRINSICS.md) for the
+See [`INTRINSICS.md`](../../../Intrinsics/INTRINSICS.md) for the
 differential-testing methodology behind these harnesses.

@@ -1,45 +1,57 @@
 import Lake
 open Lake DSL
 
-/-! # Root Lake project (for the verilib atomization pipeline)
-
-    The real Lean verification tree lives under `lean/`. This root `lakefile`
-    exists so the **repo root is a valid Lake project**, which is what
-    `probe-aeneas extract .` (run by the hosted atomization pipeline from the
-    repo root) requires: it treats the project directory as the Lean/Lake
-    project and locates the Rust crate relative to it.
-
-    Rather than duplicate the sources, the package sets `srcDir := "lean"`, so
-    every library root below resolves under `lean/` — this is a thin overlay of
-    `lean/lakefile.lean`, kept in sync with it. Developers working purely on the
-    Lean proofs continue to use `lean/lakefile.lean` (e.g. `cd lean && lake
-    build`); nothing about that workflow or the `Makefile` changes. -/
-
 require aeneas from git
   "https://github.com/AeneasVerif/aeneas.git" @ "b059c34a" / "backends" / "lean"
 
-package «symcrust» where
-  -- The Lean sources live in `lean/`; treat that as the package source root so
-  -- the repo root can act as the Lake project without moving any files.
-  srcDir := "lean"
+package «symcrust»
 
-/-! ## Specifications library -/
+/-! ## Specifications library
+
+    `Spec` collects the FIPS / NIST specifications and supporting
+    pure-math properties for the primitives shipped in this branch:
+    SHA-3 family (FIPS 202) and ML-KEM (FIPS 203). Built as a
+    separate root namespace so the file layout
+    (`lean/Spec/<Primitive>/...`) mirrors the conceptual layer
+    (audited spec vs. proof) and so reviewers can build just the specs
+    via `lake build Spec`. -/
 lean_lib «Spec»
 
-/-! ## Default-built library (active Spec + Properties proof closure). -/
+/-! ## Default-built library
+
+    `Symcrust` is the active Spec + Properties proof closure, hand-curated by
+    `Symcrust.lean` → `Spec.lean` + `Symcrust/Properties.lean`. Must compile
+    clean (no errors, no `sorry`s). -/
+
 @[default_target]
 lean_lib «Symcrust»
 
-/-! ## Per-primitive convenience aliases. -/
+/-! ## Per-primitive convenience aliases
+
+    Each is rooted on a top-level `<Name>.lean` file that re-exports just one
+    primitive's Spec + Properties closure. Useful for fast iteration:
+    `lake build MLKEM` builds the ML-KEM closure without touching SHA-3
+    proofs. These aliases are subsets of `Symcrust` and so don't add
+    compilations to the default `lake build` (Lake deduplicates by module). -/
+
 lean_lib «MLKEM»
 lean_lib «SHA3»
 
-/-- Verified models of hardware intrinsics. -/
+/-- Verified models of hardware intrinsics. Layered strictly above `Aeneas.*`
+    and `Symcrust.Code.*`. Used by SHA-3 and ML-KEM (NTT SIMD fast paths).
+    `globs` keeps all files in scope so they don't bit-rot. -/
 @[default_target]
 lean_lib «Intrinsics» where
   globs := #[.andSubmodules `Intrinsics]
 
-/-! ## Spec test vectors. -/
+/-! ## Spec test vectors
+
+    `SpecTests` runs the audited specifications on standard test vectors
+    (CAVP / ACVP). Not part of the default `lake build` closure; build with
+    `lake build SpecTests`. The SHA-3 vectors are `#guard`s checked at
+    `lake build SpecTests` time; the ML-KEM CAVP/ACVP runner is the
+    `mlKemTests` executable below (`lake exe mlKemTests`). Trimmed to the
+    SHA-3 + ML-KEM scope of this branch. -/
 lean_lib «SpecTests» where
   globs := #[.andSubmodules `SpecTests]
 

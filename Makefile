@@ -23,7 +23,7 @@ EXTRACT_TOOLCHAIN ?= $(shell awk -F'"' '/^channel/{print $$2}' $(CHARON_HOME)/ru
 # commit hash: src/ and the extracted Code/ are committed together, so the
 # extraction is reproduced from the working tree itself (`make extract` then
 # `git diff`), not from a self-referential commit pointer.
-EXTRACTION_LOG ?= lean/Symcrust/Code/EXTRACTION.md
+EXTRACTION_LOG ?= Symcrust/Code/EXTRACTION.md
 
 # `make` with no target runs a full extraction of the RC's entire scope
 # (SHA-3 + ML-KEM + verify + common). Extract a superset, never a subset.
@@ -45,15 +45,15 @@ extract-log:
 	        "$$(awk -F'\"' '/^channel/{print $$2}' $(CHARON_HOME)/rust-toolchain 2>/dev/null || echo unknown)" >> $(EXTRACTION_LOG)
 	@printf 'options    : CHARON_OPTIONS=%s  AENEAS_OPTIONS=%s\n' \
 	        "$(CHARON_OPTIONS)" "$(AENEAS_OPTIONS)"                        >> $(EXTRACTION_LOG)
-	@printf 'lean       : %s\n' "$$(cat lean/lean-toolchain 2>/dev/null || echo unknown)" >> $(EXTRACTION_LOG)
+	@printf 'lean       : %s\n' "$$(cat lean-toolchain 2>/dev/null || echo unknown)" >> $(EXTRACTION_LOG)
 	@echo "[extract-log] wrote single provenance record to $(EXTRACTION_LOG)"
 
 # Pin Lean to whatever Aeneas itself is built against. On a fresh checkout
-# (no `lean/lean-toolchain` yet) this seeds the file; on subsequent
+# (no `lean-toolchain` yet) this seeds the file; on subsequent
 # extractions it FAILS if the two diverge, so a Lean upgrade is always a
 # deliberate decision (proofs may not survive a version bump).
 AENEAS_LEAN_TOOLCHAIN ?= $(AENEAS_HOME)/backends/lean/lean-toolchain
-LOCAL_LEAN_TOOLCHAIN  ?= lean/lean-toolchain
+LOCAL_LEAN_TOOLCHAIN  ?= lean-toolchain
 
 .PHONY: check-lean-toolchain
 check-lean-toolchain:
@@ -75,7 +75,7 @@ check-lean-toolchain:
 
 # Post-processing for the `extract` target.
 #
-# Parameterised on EXTRACT_SUBDIR (relative path under lean/, default
+# Parameterised on EXTRACT_SUBDIR (relative path under the repo root, default
 # Symcrust/Code) so the logic stays independent of the destination tree.
 #
 # (1) `TypesExternal_Template.lean` / `FunsExternal_Template.lean` are
@@ -89,7 +89,7 @@ check-lean-toolchain:
 #     zeta tables (`mldsa.ntt.{ZETA_BITREV_TIMES_R,NEG_ZETA_BITREV_TIMES_R}`).
 #     Without this, `lake build` fails at the table definitions.
 # (3) Pin Lean to the toolchain Aeneas itself uses (its backend & test suite
-#     are built against). Auto-create `lean/lean-toolchain` on first
+#     are built against). Auto-create `lean-toolchain` on first
 #     extraction; fail loudly on mismatch on later extractions so the upgrade
 #     is a deliberate decision (proofs may not survive a Lean version bump).
 EXTRACT_SUBDIR ?= Symcrust/Code
@@ -101,7 +101,7 @@ check-extract-tools:
 	@[ -x "$(CHARON_HOME)/bin/charon" ] || { echo "[extract] ERROR: $(CHARON_HOME)/bin/charon not found" >&2; exit 1; }
 
 extract-postprocess: check-lean-toolchain
-	@D=lean/$(EXTRACT_SUBDIR); \
+	@D=$(EXTRACT_SUBDIR); \
 	if [ -f $$D/FunsExternal_Template.lean ]; then \
 	    echo "[postprocess] running prune-external-template.py on $$D/FunsExternal_Template.lean"; \
 	    python3 scripts/prune-external-template.py --subdir $(EXTRACT_SUBDIR) || \
@@ -182,9 +182,9 @@ extract: check-extract-tools
 	    --dest-file symcrust.llbc \
 	    $(CHARON_OPTIONS) -- --features verify \
 	  || { echo "[extract] ERROR: charon failed; Code/ and EXTRACTION.md left unchanged." >&2; exit 1; }
-	$(AENEAS_HOME)/bin/aeneas symcrust.llbc -dest lean -subdir Symcrust/Code -split-files -backend lean -print-error-emitters -color -max-error-spans -1 -loops-to-rec $(AENEAS_OPTIONS) \
+	$(AENEAS_HOME)/bin/aeneas symcrust.llbc -dest . -subdir Symcrust/Code -split-files -backend lean -print-error-emitters -color -max-error-spans -1 -loops-to-rec $(AENEAS_OPTIONS) \
 	  || { echo "[extract] ERROR: aeneas failed; EXTRACTION.md left unchanged (Code/ may be partial)." >&2; exit 1; }
-	@test -f lean/Symcrust/Code/Funs.lean \
+	@test -f Symcrust/Code/Funs.lean \
 	  || { echo "[extract] ERROR: aeneas produced no Funs.lean; EXTRACTION.md left unchanged." >&2; exit 1; }
 	$(MAKE) extract-postprocess
 	EXTRACT_CMD='make extract' $(MAKE) extract-log

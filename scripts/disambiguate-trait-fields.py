@@ -280,7 +280,7 @@ def main() -> int:
     ap.add_argument(
         "--subdir",
         default="Symcrust/Code",
-        help="Lean subdirectory under lean/ holding Types.lean and Funs.lean",
+        help="Lean subdirectory under the repo root holding Types.lean and Funs.lean",
     )
     ap.add_argument(
         "--check",
@@ -289,7 +289,7 @@ def main() -> int:
     )
     args = ap.parse_args()
 
-    base = Path("lean") / args.subdir
+    base = Path(args.subdir)
     types_path = base / "Types.lean"
     funs_path = base / "Funs.lean"
     if not types_path.exists():

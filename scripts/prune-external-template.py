@@ -10,9 +10,9 @@ matching declarations from `FunsExternal_Template.lean`.
 Effect (A2 mechanism — see campaign plan):
 
   * The template no longer carries declarations for paths bound by
-    `lean/Intrinsics/Axioms/**.lean`, nor for paths bound by the
+    `Intrinsics/Axioms/**.lean`, nor for paths bound by the
     algorithm-level composite-shim files at
-    `lean/Symcrust/Properties/<Alg>/Intrinsics/**.lean`.
+    `Symcrust/Properties/<Alg>/Intrinsics/**.lean`.
   * Aeneas's "use this binding" lookup still finds the rust_fun decl
     in the imported `Intrinsics.*` files when extracting downstream
     proofs — same dispatch path as `Aeneas.Std`.
@@ -56,8 +56,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 
 # Filesystem roots scanned for binding declarations.
 BIND_ROOTS = [
-    REPO_ROOT / "lean" / "Intrinsics",
-    REPO_ROOT / "lean" / "Symcrust" / "Properties",
+    REPO_ROOT / "Intrinsics",
+    REPO_ROOT / "Symcrust" / "Properties",
 ]
 
 # Regex catches @[rust_fun "..."] / @[rust_type "..."] across whitespace/newlines.
@@ -144,7 +144,7 @@ INJECT_SENTINEL = "-- @injected by scripts/prune-external-template.py"
 
 
 def axioms_path_to_properties_module(p: Path) -> str | None:
-    """Map `lean/Intrinsics/Axioms/<Arch>/<Ext>.lean` to the public
+    """Map `Intrinsics/Axioms/<Arch>/<Ext>.lean` to the public
     silicon-axiom module `Intrinsics.Axioms.<Arch>.<Ext>` that
     `FunsExternal.lean` should import directly.
 
@@ -158,7 +158,7 @@ def axioms_path_to_properties_module(p: Path) -> str | None:
     siblings INSIDE the Axioms file alongside the typing axiom, so
     consumers like FunsExternal pick those up directly with no façade."""
     try:
-        rel = p.relative_to(REPO_ROOT / "lean")
+        rel = p.relative_to(REPO_ROOT)
     except ValueError:
         return None
     parts = rel.with_suffix("").parts
@@ -171,15 +171,15 @@ def axioms_path_to_properties_module(p: Path) -> str | None:
 
 
 def file_to_module(p: Path) -> str | None:
-    """Map any binding file `lean/<A>/<B>/<C>.lean` to its dotted Lean module
-    `<A>.<B>.<C>` (e.g. `lean/Intrinsics/Simd.lean` -> `Intrinsics.Simd`).
+    """Map any binding file `<A>/<B>/<C>.lean` to its dotted Lean module
+    `<A>.<B>.<C>` (e.g. `Intrinsics/Simd.lean` -> `Intrinsics.Simd`).
 
     Used by the TypesExternal pruner, whose carrier bindings (e.g.
     `core::core_arch::x86::__m128i`) live in leaf `Intrinsics.*` modules (which
     import only `Aeneas`, so `Code/TypesExternal` can import them cycle-free),
     NOT under `Intrinsics/Axioms/`."""
     try:
-        rel = p.relative_to(REPO_ROOT / "lean")
+        rel = p.relative_to(REPO_ROOT)
     except ValueError:
         return None
     return ".".join(rel.with_suffix("").parts)
@@ -302,7 +302,7 @@ def process_template(template: Path, bound: dict[str, list[Path]], module_of, ar
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--subdir", default="Symcrust/Code",
-                    help="Subdirectory under lean/ holding the *External_Template.lean files")
+                    help="Subdirectory under the repo root holding the *External_Template.lean files")
     ap.add_argument("--check", action="store_true",
                     help="exit non-zero if pruning would change a file")
     ap.add_argument("--dry-run", action="store_true",
@@ -310,7 +310,7 @@ def main() -> int:
     ap.add_argument("--verbose", action="store_true")
     args = ap.parse_args()
 
-    d = REPO_ROOT / "lean" / args.subdir
+    d = REPO_ROOT / args.subdir
     funs_template = d / "FunsExternal_Template.lean"
     if not funs_template.exists():
         print(f"ERROR: template not found: {funs_template}", file=sys.stderr)

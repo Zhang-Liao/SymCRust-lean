@@ -10,7 +10,7 @@
 # intrinsic *model* (`src/verify/intrinsics/**`) against the REAL hardware
 # intrinsic:  model(x) == core::arch::<arch>::<intrinsic>(x)  (or a NIST KAT
 # for the axiomatised crypto opcodes). This is the "§1 P7" empirical evidence
-# behind the `lean/Intrinsics` axioms and theorems.
+# behind the `Intrinsics` axioms and theorems.
 #
 # For every harness it decides to run, this script:
 #   1. builds/runs it with the EXACT `RUSTFLAGS="-C target-feature=+..."` that
@@ -57,7 +57,7 @@
 # Scope reminder: only SSE2, AVX, AVX2 (x86_64) and NEON (aarch64) are in the
 # trust base of the primitives verified in THIS release (SHA-3, ML-KEM). The
 # AES-NI / SHA-NI / PCLMULQDQ / aarch64-AES harnesses cover models used only
-# by other/forthcoming primitives (see lean/Intrinsics/INTRINSICS.md §2).
+# by other/forthcoming primitives (see Intrinsics/INTRINSICS.md §2).
 #
 # ---------------------------------------------------------------------------
 # USAGE
